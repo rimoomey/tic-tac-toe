@@ -38,8 +38,8 @@ class Board
 
   def self.move_validator(player, space)
     if player.class != Integer ||
-       player != 1 ||
-       player != 2
+       (player != 1 &&
+       player != 2)
       puts 'Invalid player number'
       return false
     end
@@ -48,8 +48,8 @@ class Board
       puts 'Invalid move'
       return false
     end
+    true
   end
-  true
 end
 
 def prompt_user(player_turn)
@@ -64,20 +64,23 @@ def play_game
 
   check_win = 0
   player_turn = 1
+  chosen_space = 0
 
   while check_win.zero?
 
     valid_move = false
     until valid_move
-      chosen_space = prompt_user(player_turn)
+      chosen_space = prompt_user(player_turn).to_i
 
       valid_move = Board.move_validator(player_turn, chosen_space)
     end
 
     game.make_move(player_turn, chosen_space)
     check_win = game.check_win
-    player_turn = (player_turn + 1).module(2)
+    player_turn = (player_turn + 1).modulo(2)
   end
 
   check_win == 1 ? 'Player 1 wins!' : 'Player 2 wins!'
 end
+
+play_game
