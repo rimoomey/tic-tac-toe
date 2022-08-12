@@ -19,18 +19,16 @@ class Board
     @player_states = player_states
   end
 
+  # Checks state of board recorded in player_states
   def check_win
     WIN_STATES.each do |state|
       return 1 if @player_states[0] & state == state
       return -1 if @player_states[1] & state == state
-
-      puts 'Player 2: ' << @player_states[1].to_s(2)
-      puts 'Win State: ' << state.to_s(2)
-      puts 'Intersection: ' << (@player_states[1] & state).to_s(2)
     end
     0
   end
 
+  # Records a player move in binary using the given space
   def make_move(player, space)
     current_player = player
     other_player = current_player.modulo(2)
@@ -41,6 +39,7 @@ class Board
     end
   end
 
+  # Class method to make sure player number is valid
   def self.valid_player_number?(player)
     if player.class != Integer ||
        (player != 0 &&
@@ -52,7 +51,7 @@ class Board
   end
 
   def self.valid_player_move?(space)
-    if space.class != Integer || space < 0 || space > 8
+    if space.class != Integer || space.negative? || space > 8
       puts 'Invalid move'
       return false
     end
@@ -60,6 +59,7 @@ class Board
   end
 
   def empty_space?(space)
+    # if intersection returns a 1, then the space is occupied already
     if !(2**space & @player_states[0]).zero? || !(2**space & @player_states[1]).zero?
       puts 'Someone already played here'
       return false
@@ -67,6 +67,7 @@ class Board
     true
   end
 
+  # Return array with current board spaces
   def board_state
     board_state = Array.new(9)
 
@@ -83,6 +84,7 @@ class Board
   end
 end
 
+# Begin main -- only holds methods for terminal display
 def prompt_user(player_turn)
   puts "Player ##{player_turn + 1}!"
   puts 'What is your move? (1-9)'
@@ -123,7 +125,6 @@ def play_game
     until valid_move
       chosen_space = prompt_user(player_turn).to_i - 1
 
-      valid_move = Board.valid_player_number?(player_turn)
       valid_move = Board.valid_player_move?(chosen_space)
       valid_move = game.empty_space?(chosen_space)
     end
