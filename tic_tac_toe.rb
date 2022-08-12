@@ -11,7 +11,8 @@ class Board
     0b100010001,
     0b001010100,
     0b001001001,
-    0b100100100
+    0b100100100,
+    0b010010010
   ]
 
   def initialize(player_states = [0b0, 0b0])
@@ -23,10 +24,9 @@ class Board
       return 1 if @player_states[0] & state == state
       return -1 if @player_states[1] & state == state
 
-      puts 'Player 1: ' << @player_states[0].to_s(2)
+      puts 'Player 2: ' << @player_states[1].to_s(2)
       puts 'Win State: ' << state.to_s(2)
-      puts 'Intersection: ' << (@player_states[0] & state).to_s(2)
-      puts (2**4).to_s(2)
+      puts 'Intersection: ' << (@player_states[1] & state).to_s(2)
     end
     0
   end
@@ -36,8 +36,8 @@ class Board
     other_player = current_player.modulo(2)
 
     if (@player_states[other_player] &
-       2**(space - 1)).zero?
-      @player_states[current_player] = @player_states[current_player] | 2**(space - 1)
+       2**space).zero?
+      @player_states[current_player] = @player_states[current_player] | 2**space
     end
   end
 
@@ -52,7 +52,7 @@ class Board
   end
 
   def self.valid_player_move?(space)
-    if space.class != Integer || space < 1 || space > 9
+    if space.class != Integer || space < 0 || space > 8
       puts 'Invalid move'
       return false
     end
@@ -60,7 +60,7 @@ class Board
   end
 
   def empty_space?(space)
-    if !(2**(space - 1) & @player_states[0]).zero? || !(2**(space - 1) & @player_states[1]).zero?
+    if !(2**space & @player_states[0]).zero? || !(2**space & @player_states[1]).zero?
       puts 'Someone already played here'
       return false
     end
@@ -121,7 +121,7 @@ def play_game
 
     valid_move = false
     until valid_move
-      chosen_space = prompt_user(player_turn).to_i
+      chosen_space = prompt_user(player_turn).to_i - 1
 
       valid_move = Board.valid_player_number?(player_turn)
       valid_move = Board.valid_player_move?(chosen_space)
