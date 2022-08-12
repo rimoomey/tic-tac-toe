@@ -27,7 +27,7 @@ class Board
   end
 
   def make_move(player, space)
-    current_player = player - 1
+    current_player = player
     other_player = current_player.modulo(2)
 
     if (@player_states[other_player] &
@@ -36,16 +36,27 @@ class Board
     end
   end
 
-  def self.move_validator(player, space)
+  def self.valid_player_number?(player)
     if player.class != Integer ||
-       (player != 1 &&
-       player != 2)
+       (player != 0 &&
+       player != 1)
       puts 'Invalid player number'
       return false
     end
+    true
+  end
 
+  def self.valid_player_move?(space)
     if space.class != Integer || space < 1 || space > 9
       puts 'Invalid move'
+      return false
+    end
+    true
+  end
+
+  def self.empty_space?(space)
+    if 2**space & player_states[0].zero? && 2**space & player_states[1].zero?
+      puts "Someone already played here"
       return false
     end
     true
@@ -53,7 +64,7 @@ class Board
 end
 
 def prompt_user(player_turn)
-  puts "Player ##{player_turn}!"
+  puts "Player ##{player_turn + 1}!"
   puts 'What is your move? (1-9)'
 
   gets.chomp
@@ -63,7 +74,7 @@ def play_game
   game = Board.new
 
   check_win = 0
-  player_turn = 1
+  player_turn = 0
   chosen_space = 0
 
   while check_win.zero?
@@ -72,7 +83,9 @@ def play_game
     until valid_move
       chosen_space = prompt_user(player_turn).to_i
 
-      valid_move = Board.move_validator(player_turn, chosen_space)
+      valid_move = Board.valid_player_number?(player_turn)
+      valid_move = Board.valid_player_choice?(chosen_space)
+      valid_move = Board.empty_space?(chosen_space)
     end
 
     game.make_move(player_turn, chosen_space)
