@@ -131,12 +131,12 @@ def play_game
 
     game.make_move(player_turn, chosen_space)
     check_win = game.check_win
-    puts check_win
     display_board(game)
     player_turn = (player_turn + 1).modulo(2)
   end
 
-  check_win == 1 ? 'Player 1 wins!' : 'Player 2 wins!'
+  message = check_win == 1 ? 'Player 1 wins!' : 'Player 2 wins!'
+  puts message
 end
 
 play_game
