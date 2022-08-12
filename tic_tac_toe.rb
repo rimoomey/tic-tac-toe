@@ -54,12 +54,27 @@ class Board
     true
   end
 
-  def self.empty_space?(space)
-    if 2**space & player_states[0].zero? && 2**space & player_states[1].zero?
-      puts "Someone already played here"
+  def empty_space?(space)
+    if !(2**space & @player_states[0]).zero? || !(2**space & @player_states[1]).zero?
+      puts 'Someone already played here'
       return false
     end
     true
+  end
+
+  def board_state
+    board_state = Array.new(9)
+
+    (1..9).each do |power|
+      if @player_states[0] & 2**power == 2**power
+        board_state[power - 1] = 'X'
+      elsif @player_states[1] & 2**power == 2**power
+        board_state[power - 1] = 'O'
+      else
+        board_state[power - 1] = ' '
+      end
+    end
+    board_state
   end
 end
 
@@ -68,6 +83,26 @@ def prompt_user(player_turn)
   puts 'What is your move? (1-9)'
 
   gets.chomp
+end
+
+def display_board(game_board)
+  spaces = game_board.board_state
+  count = 0
+  3.times do
+    30.times { print '-' }
+    puts ''
+    (0..2).each do |time|
+      puts '|         |         |         |' unless time == 1
+
+      if time == 1
+        puts "|    #{spaces[count]}    |    #{spaces[count + 1]}    |" \
+             "    #{spaces[count + 2]}    |"
+        count += 3
+      end
+    end
+  end
+  28.times { print '-' }
+  puts ''
 end
 
 def play_game
@@ -84,12 +119,14 @@ def play_game
       chosen_space = prompt_user(player_turn).to_i
 
       valid_move = Board.valid_player_number?(player_turn)
-      valid_move = Board.valid_player_choice?(chosen_space)
-      valid_move = Board.empty_space?(chosen_space)
+      valid_move = Board.valid_player_move?(chosen_space)
+      valid_move = game.empty_space?(chosen_space)
     end
 
     game.make_move(player_turn, chosen_space)
     check_win = game.check_win
+    puts check_win
+    display_board(game)
     player_turn = (player_turn + 1).modulo(2)
   end
 
