@@ -36,21 +36,48 @@ class Board
     end
   end
 
-  def move_validator(player, space)
+  def self.move_validator(player, space)
     if player.class != Integer ||
        player != 1 ||
        player != 2
-      return 'Invalid player number'
+      puts 'Invalid player number'
+      return false
     end
 
-    return 'Invalid move' if space.class != Integer || space < 1 || space > 9
+    if space.class != Integer || space < 1 || space > 9
+      puts 'Invalid move'
+      return false
+    end
   end
+  true
 end
 
-game = Board.new
+def prompt_user(player_turn)
+  puts "Player ##{player_turn}!"
+  puts 'What is your move? (1-9)'
 
-puts game.check_win
+  gets.chomp
+end
 
-game.make_move(1, 5)
+def play_game
+  game = Board.new
 
-puts game.player_states
+  check_win = 0
+  player_turn = 1
+
+  while check_win.zero?
+
+    valid_move = false
+    until valid_move
+      chosen_space = prompt_user(player_turn)
+
+      valid_move = Board.move_validator(player_turn, chosen_space)
+    end
+
+    game.make_move(player_turn, chosen_space)
+    check_win = game.check_win
+    player_turn = (player_turn + 1).module(2)
+  end
+
+  check_win == 1 ? 'Player 1 wins!' : 'Player 2 wins!'
+end
