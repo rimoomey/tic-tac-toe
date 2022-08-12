@@ -1,20 +1,20 @@
-# frozen_string_literal: true
+# frozen_string_literal: false
 
 # Board for tic tac toe game
 class Board
   attr_accessor :player_states
 
   WIN_STATES = [
-    0b111000000,
-    0b000111000,
     0b000000111,
+    0b000111000,
+    0b111000000,
     0b100010001,
     0b001010100,
-    0b100100100,
-    0b001001001
+    0b001001001,
+    0b100100100
   ]
 
-  def initialize(player_states = [0, 0])
+  def initialize(player_states = [0b0, 0b0])
     @player_states = player_states
   end
 
@@ -22,6 +22,11 @@ class Board
     WIN_STATES.each do |state|
       return 1 if @player_states[0] & state == state
       return -1 if @player_states[1] & state == state
+
+      puts 'Player 1: ' << @player_states[0].to_s(2)
+      puts 'Win State: ' << state.to_s(2)
+      puts 'Intersection: ' << (@player_states[0] & state).to_s(2)
+      puts (2**4).to_s(2)
     end
     0
   end
@@ -31,8 +36,8 @@ class Board
     other_player = current_player.modulo(2)
 
     if (@player_states[other_player] &
-       2**space).zero?
-      @player_states[current_player] = @player_states[current_player] | 2**space
+       2**(space - 1)).zero?
+      @player_states[current_player] = @player_states[current_player] | 2**(space - 1)
     end
   end
 
@@ -55,7 +60,7 @@ class Board
   end
 
   def empty_space?(space)
-    if !(2**space & @player_states[0]).zero? || !(2**space & @player_states[1]).zero?
+    if !(2**(space - 1) & @player_states[0]).zero? || !(2**(space - 1) & @player_states[1]).zero?
       puts 'Someone already played here'
       return false
     end
@@ -65,13 +70,13 @@ class Board
   def board_state
     board_state = Array.new(9)
 
-    (1..9).each do |power|
+    (0...9).each do |power|
       if @player_states[0] & 2**power == 2**power
-        board_state[power - 1] = 'X'
+        board_state[power] = 'X'
       elsif @player_states[1] & 2**power == 2**power
-        board_state[power - 1] = 'O'
+        board_state[power] = 'O'
       else
-        board_state[power - 1] = ' '
+        board_state[power] = ' '
       end
     end
     board_state
@@ -101,7 +106,7 @@ def display_board(game_board)
       end
     end
   end
-  28.times { print '-' }
+  30.times { print '-' }
   puts ''
 end
 
