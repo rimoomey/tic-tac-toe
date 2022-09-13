@@ -64,4 +64,124 @@ describe Board do
       end
     end
   end
+
+  describe '#valid_player_number?' do
+    context 'when player number is valid' do
+      it 'returns true when number is 1' do
+        expect(Board.valid_player_number?(1)).to be(true)
+      end
+
+      it 'returns true when number is 0' do
+        expect(Board.valid_player_number?(1)).to be(true)
+      end
+    end
+
+    context 'when player number is invalid' do
+      it 'returns false for number greater than 1' do
+        expect(Board.valid_player_number?(2)).to be(false)
+      end
+
+      it 'returns false for negative number' do
+        expect(Board.valid_player_number?(-5)).to be(false)
+      end
+    end
+  end
+
+  describe '#valid_player_move?' do
+    context 'when player number is valid' do
+      it 'returns true for 0' do
+        expect(Board.valid_player_move?(0)).to be(true)
+      end
+
+      it 'returns true for 8' do
+        expect(Board.valid_player_move?(8)).to be(true)
+      end
+    end
+
+    context 'when player number is invalid' do
+      it 'returns false for -1' do
+        expect(Board.valid_player_move?(-1)).to be(false)
+      end
+
+      it 'returns false for 9' do
+        expect(Board.valid_player_move?(9)).to be(false)
+      end
+
+      it 'returns false for 1000' do
+        expect(Board.valid_player_move?(1000)).to be(false)
+      end
+    end
+  end
+
+  describe '#empty_space?' do
+    context 'when the space is empty' do
+      it 'returns true' do
+        expect(game_board.empty_space?(1)).to eq(true)
+      end
+    end
+
+    context 'when the space is full' do
+      before do
+        game_board.player_states[0] = 0b000010000
+      end
+      it 'returns false' do
+        expect(game_board.empty_space?(4)).to eq(false)
+      end
+    end
+  end
+
+  describe '#board_state' do
+    context 'there are Xs on the diagonal' do
+      before do
+        game_board.player_states[0] = 0b100010001
+      end
+      it "returns ['X', ' ', ' ', ' ', 'X', ' ', ' ', ' ', 'X']" do
+        expect(game_board.board_state).to eq(['X', ' ', ' ', ' ', 'X', ' ', ' ', ' ', 'X'])
+      end
+    end
+
+    context 'There are Xs in the first column and Os in the last column' do
+      before do
+        game_board.player_states[0] = 0b001001001
+        game_board.player_states[1] = 0b100100100
+      end
+
+      it "returns ['X', ' ', 'O', 'X', ' ', 'O', 'X', ' ', 'O']" do
+        expect(game_board.board_state).to eq(['X', ' ', 'O', 'X', ' ', 'O', 'X', ' ', 'O'])
+      end
+    end
+  end
+
+  describe '#prompt_user' do
+    # simply prompts and gets -- unnecessary to test
+  end
+
+  describe '#display_board' do
+    context 'when there is a horizontal X win in the first row' do
+      before do
+        game_board.player_states[0] = 0b000000111
+      end
+
+      it 'prints board correctly' do
+        expected_board_output = "------------------------------\n" \
+                                "|         |         |         |\n" \
+                                "|    X    |    X    |    X    |\n" \
+                                "|         |         |         |\n" \
+                                "------------------------------\n" \
+                                "|         |         |         |\n" \
+                                "|         |         |         |\n" \
+                                "|         |         |         |\n" \
+                                "------------------------------\n" \
+                                "|         |         |         |\n" \
+                                "|         |         |         |\n" \
+                                "|         |         |         |\n" \
+                                '------------------------------'
+        expect(game_board.display_board).to eq(expected_board_output)
+      end
+    end
+  end
+
+  describe '#play_game' do
+    # method only handles user output -- does not need testing, but all methods it calls are tested
+  end
 end
