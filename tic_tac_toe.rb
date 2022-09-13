@@ -33,10 +33,9 @@ class Board
     current_player = player
     other_player = current_player.modulo(2)
 
-    if (@player_states[other_player] &
-       2**space).zero?
-      @player_states[current_player] = @player_states[current_player] | 2**space
-    end
+    return unless (@player_states[other_player] & 2**space).zero?
+
+    @player_states[current_player] = @player_states[current_player] | 2**space
   end
 
   # Class method to make sure player number is valid
@@ -139,4 +138,4 @@ def play_game
   puts message
 end
 
-play_game
+# play_game
